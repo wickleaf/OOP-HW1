@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// SAQIB REHMAN (sr10128)
+
 // Constants
 const int MAX_RIDES = 100;
 const int MAX_DRIVERS = 50;
@@ -22,8 +24,8 @@ struct Ride {
 // Global Variables
 Ride rideDetails[MAX_RIDES];
 int rideCount = 0; // Keeps track of total rides
-string Drivers[MAX_DRIVERS]
-int driverCount = 0 // Keeps track of total drivers
+string Drivers[MAX_DRIVERS];
+int driverCount = 0; // Keeps track of total drivers
 
 // ================= Function Definitions =================
 
@@ -31,6 +33,17 @@ int IsAvailable(string driverName, Ride rides[]){
     // TODO: Searches through the array 
     //       Checks if the given driverName has an Ongoing ride
     //       If the given driverName has an Ongoing ride returns 1, otherwise returns 0
+
+    Ride *ptr = rides;
+    int i =0;
+    for (int i=0; i<MAX_DRIVERS; i++; ptr++){
+        if ((ptr -> driverName == driverName)&&(ptr -> status == "Ongoing")){
+            return 1;
+        }
+    return 0;
+    }
+
+
 }
 
 int GetFare(int distance){
