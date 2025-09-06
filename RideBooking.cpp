@@ -36,7 +36,7 @@ int IsAvailable(string driverName, Ride rides[]){
 
     Ride *ptr = rides;
     int i =0;
-    for (int i=0; i<MAX_DRIVERS; i++; ptr++){
+    for (int i=0; i<MAX_DRIVERS; i++, ptr++){
         if ((ptr -> driverName == driverName)&&(ptr -> status == "Ongoing")){
             return 1;
         }
