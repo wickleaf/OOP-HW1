@@ -18,30 +18,41 @@ struct Ride {
     string pickupLocation;
     string dropoffLocation;
     double fare;
-    string status; // "Ongoing", "Completed", "Cancelled"
+    string status;
+    double distance; // "Ongoing", "Completed", "Cancelled"
 };
 
 // Global Variables
-Ride rideDetails[MAX_RIDES];
-int rideCount = 0; // Keeps track of total rides
-string Drivers[MAX_DRIVERS];
-int driverCount = 0; // Keeps track of total drivers
-
+Ride rideDetails[MAX_RIDES]{{"Ali", 100001, "Farhan", "A", "B", 200, "Ongoing", 5.0},{"Sara", 100002, "Mujtaba", "X", "Y", 150, "Completed", 3.0}};
+int rideCount = 2; // Keeps track of total rides
+string Drivers[MAX_DRIVERS]={"Farhan","Mujtaba"};
+int driverCount = 2; // Keeps track of total drivers
+int rideID = START_RIDE_ID; //To use later on for assigning and incrementing
 // ================= Function Definitions =================
 
 int IsAvailable(string driverName, Ride rides[]){
     // TODO: Searches through the array 
     //       Checks if the given driverName has an Ongoing ride
     //       If the given driverName has an Ongoing ride returns 1, otherwise returns 0
-
-    Ride *ptr = rides;
-    int i =0;
-    for (int i=0; i<MAX_DRIVERS; i++, ptr++){
-        if ((ptr -> driverName == driverName)&&(ptr -> status == "Ongoing")){
-            return 1;
-        }
+    
+    bool ongoing = false;
+    for (int i=0; i<driverCount; i++){
+        if ((rides[i].driverName == driverName)&&(rideDetails[i].status == "Ongoing")){
+            ongoing = true;
+        } 
+        else if(rides[i].driverName== driverName){
+            //cout<<"works";
+            ongoing = false;
+        } //Finds driver and checks if they have an ongoing ride
     }
-    return 0;
+    if(ongoing==false){
+        return 0;
+    }
+    else{
+        return 1;
+    }
+    
+    
 }
 
 int GetFare(int distance){
@@ -76,9 +87,61 @@ Ride BookRide(string name) {
     //       If there is no driver avaliable then output an error message, generate a Ride ID, set ride status to "Cancelled" and driverName to ""
     Ride newRide;
     string *ptr = Drivers;
-    for(int i=0; i<=50; i++, ptr++){
-        
+    string pickup;
+    string dropOff;
+    double distance;
+
+    if (rideCount==MAX_RIDES){
+        cout << "Sorry you cannot book a ride :(";
+        return newRide;
     }
+
+    cout << "Enter pickup location: "; cin>> pickup; cout<<"Enter drop-off location: "; cin>> dropOff; cout<<"Enter Distance: "; cin>> distance;
+    bool riderAval = false;
+    int avalDrivers[driverCount]; //Will use to validate user input through indexing
+    int avalCount=0;
+    for(int i=0; i<driverCount; i++, ++ptr){
+        if (IsAvailable(*ptr, rideDetails)==0){
+            riderAval=true;
+            avalDrivers[avalCount]=avalCount+1;
+            cout <<i<<") "<<*ptr<<endl;
+            avalCount++;
+        }
+    }
+    if(rideID==START_RIDE_ID){
+            newRide.rideID=rideID;
+        }
+    else{
+        newRide.rideID = ++rideID;
+        }
+    if(riderAval==false){
+        cout << "No driver is available at the moment :("<<endl;
+        newRide.status="Cancelled";
+        newRide.driverName="";
+        rideDetails[rideCount]=newRide;
+        rideCount++;
+        return newRide;
+    }
+    int driver;
+    while(true){
+        cout<<"Pick a driver: "; cin>> driver;
+        if (driver >= avalDrivers[0] && driver <= avalDrivers[avalCount-1]) break;
+        else{
+            cout<<"Index out of range"<<endl;
+        }
+
+    }
+    
+    double fare = GetFare(distance);
+    cout << "Your fare will be: "<<fare<< endl;
+
+    newRide.status="Ongoing"; newRide.driverName= driver; newRide.distance=distance; 
+    newRide.dropoffLocation=dropOff; newRide.pickupLocation=pickup; newRide.fare=fare; 
+    newRide.riderName=name;
+
+    rideDetails[rideCount]=newRide;
+    rideCount++;
+
     return newRide;
 }
 
@@ -115,6 +178,7 @@ int main() {
     // - Use the provided functions to implement menu options
     // - Ensure ride count does not exceed MAX_RIDES
     // - Validate menu inputs
+    Ride test = BookRide("saqib");
 
     return 0;
 }
