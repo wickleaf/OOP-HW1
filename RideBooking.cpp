@@ -40,10 +40,8 @@ int IsAvailable(string driverName, Ride rides[]){
         if ((ptr -> driverName == driverName)&&(ptr -> status == "Ongoing")){
             return 1;
         }
-    return 0;
     }
-
-
+    return 0;
 }
 
 int GetFare(int distance){
@@ -51,7 +49,22 @@ int GetFare(int distance){
     //      Distance < 2KM : 50 + (50 * distance)
     //      2KM < Distance < 5KM : 150 + (80 * (distance - 2)) 
     //      Distance > 5KM : 390 + (100 * (distance - 5))
-}
+    if (distance<2){
+        double fare = 50+(50*distance);
+        return fare;
+    }
+    else if (distance > 2 && distance < 5){
+        double fare = 150+(80*(distance-2));
+        return fare;
+    }
+    else{
+        double fare = 390 + (100*(distance-5));
+        return fare;
+    }
+    
+
+ }
+    
 
 // Prompts user for ride details and returns a Ride struct
 Ride BookRide(string name) {
@@ -62,6 +75,10 @@ Ride BookRide(string name) {
     //       Set ride status to "Ongoing" and generate Ride ID
     //       If there is no driver avaliable then output an error message, generate a Ride ID, set ride status to "Cancelled" and driverName to ""
     Ride newRide;
+    string *ptr = Drivers;
+    for(int i=0; i<=50; i++, ptr++){
+        
+    }
     return newRide;
 }
 
