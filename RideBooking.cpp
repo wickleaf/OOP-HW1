@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <variant>
 
 using namespace std;
 
@@ -77,6 +78,42 @@ int GetFare(int distance){
  }
     
 
+bool inStruct(Ride rides[],string toGet,const variant<int,string,double>&value){
+    for(int i = 0; i<rideCount; i++){
+        if(toGet=="rideID"){
+            if(get<int>(value)==rides[i].rideID){
+                return true;
+            }   
+        }
+        else if(toGet=="fare"){
+            if(get<double>(value)==rides[i].fare){
+                return true;
+            }   
+        }
+        if(toGet=="distance"){
+            if(get<double>(value)==rides[i].distance){
+                return true;
+            }   
+        }
+        if(toGet=="driver"){
+            if(get<string>(value)==rides[i].driverName){
+                return true;
+            }   
+        }
+        if(toGet=="rider"){
+            if(get<string>(value)==rides[i].riderName){
+                return true;
+            }   
+        }
+        if(toGet=="status"){
+            if(get<string>(value)==rides[i].status){
+                return true;
+            }   
+        }
+    }
+    return false;
+}
+
 // Prompts user for ride details and returns a Ride struct
 Ride BookRide(string name) {
     // TODO: Prompt user for pickup, drop-off, distance
@@ -96,7 +133,11 @@ Ride BookRide(string name) {
         return newRide;
     }
 
-    cout << "Enter pickup location: "; cin>> pickup; cout<<"Enter drop-off location: "; cin>> dropOff; cout<<"Enter Distance: "; cin>> distance;
+    cout << "Enter pickup location: "; cin>> pickup; cout<<"Enter drop-off location: "; cin>> dropOff; 
+    do{
+        cout<<"Enter Distance: "; cin>>distance;
+    }
+    while(distance<0.0);
     bool riderAval = false;
     int avalDrivers[driverCount]; //Will use to validate user input through indexing
     int avalCount=0;
@@ -150,6 +191,34 @@ void ViewRides(string name, Ride rides[], string status = "") {
     // TODO: Loop through the array and print rides where name matches riderName or driverName
     //       Displays all rides for that name regardless of status if status is ""
     //       Displays rides for that name and status if a status value was passed
+    if(status == ""){
+        for(int i = 0; i<rideCount; i++){
+            if(name == rides[i].driverName || name == rides[i].riderName){
+                cout<<"Driver Name: "<< rides[i].driverName<<endl;
+                cout<<"Rider Name: "<< rides[i].riderName<<endl;
+                cout<<"Ride ID: "<< rides[i].rideID<<endl;
+                cout<<"Pickup Location: "<< rides[i].pickupLocation<<endl;
+                cout<<"Dropoff Location: "<< rides[i].dropoffLocation<<endl;
+                cout<<"Distance: "<< rides[i].distance<<endl;
+                cout<<"Fare: "<< rides[i].fare<<endl;
+                cout<<"Status: "<< rides[i].status<<endl;
+            }
+        }
+    }
+    else{
+        for(int i = 0; i<rideCount; i++){
+            if((name == rides[i].driverName || name == rides[i].riderName)&& rides[i].status==status){
+                cout<<"Driver Name: "<< rides[i].driverName<<endl;
+                cout<<"Rider Name: "<< rides[i].riderName<<endl;
+                cout<<"Ride ID: "<< rides[i].rideID<<endl;
+                cout<<"Pickup Location: "<< rides[i].pickupLocation<<endl;
+                cout<<"Dropoff Location: "<< rides[i].dropoffLocation<<endl;
+                cout<<"Distance: "<< rides[i].distance<<endl;
+                cout<<"Fare: "<< rides[i].fare<<endl;
+                cout<<"Status: "<< rides[i].status<<endl;
+            }
+        }
+    }
 }
 
 // Displays ongoing rides for the user, prompts for Ride ID, and returns it
@@ -157,6 +226,9 @@ int ChangeStatus(string name, Ride rides[], int count) {
     // TODO: Show ongoing rides for the name. Hint: Call ViewRides and use the third parameter 
     //       Ask user to enter the Ride ID to update
     //       Return the Ride ID so status can be updated in main
+    ViewRides(name,rides,"Ongoing");
+    
+
     return -1; // Placeholder
 }
 
