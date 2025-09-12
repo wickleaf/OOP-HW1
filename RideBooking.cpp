@@ -28,7 +28,7 @@ Ride rideDetails[MAX_RIDES]{{"Ali", 100001, "Farhan", "A", "B", 200, "Ongoing", 
 int rideCount = 2; // Keeps track of total rides
 string Drivers[MAX_DRIVERS]={"Farhan","Mujtaba"};
 int driverCount = 2; // Keeps track of total drivers
-int rideID = START_RIDE_ID; //To use later on for assigning and incrementing
+int rideID = 100002; //To use later on for assigning and incrementing
 // ================= Function Definitions =================
 
 int IsAvailable(string driverName, Ride rides[]){
@@ -187,55 +187,106 @@ Ride BookRide(string name) {
 }
 
 // Displays rides that match the given name (rider or driver)
-void ViewRides(string name, Ride rides[], string status = "") {
+void ViewRides(string name, Ride rides[], string status, string mode) {
     // TODO: Loop through the array and print rides where name matches riderName or driverName
     //       Displays all rides for that name regardless of status if status is ""
     //       Displays rides for that name and status if a status value was passed
-    if(status == ""){
-        for(int i = 0; i<rideCount; i++){
-            if(name == rides[i].driverName || name == rides[i].riderName){
-                cout<<"Driver Name: "<< rides[i].driverName<<endl;
-                cout<<"Rider Name: "<< rides[i].riderName<<endl;
-                cout<<"Ride ID: "<< rides[i].rideID<<endl;
-                cout<<"Pickup Location: "<< rides[i].pickupLocation<<endl;
-                cout<<"Dropoff Location: "<< rides[i].dropoffLocation<<endl;
-                cout<<"Distance: "<< rides[i].distance<<endl;
-                cout<<"Fare: "<< rides[i].fare<<endl;
-                cout<<"Status: "<< rides[i].status<<endl;
+    if(mode=="Driver"){
+        if(status == ""){
+            for(int i = 0; i<rideCount; i++){
+                if(name == rides[i].driverName){
+                    cout<<"Driver Name: "<< rides[i].driverName<<endl;
+                    cout<<"Rider Name: "<< rides[i].riderName<<endl;
+                    cout<<"Ride ID: "<< rides[i].rideID<<endl;
+                    cout<<"Pickup Location: "<< rides[i].pickupLocation<<endl;
+                    cout<<"Dropoff Location: "<< rides[i].dropoffLocation<<endl;
+                    cout<<"Distance: "<< rides[i].distance<<endl;
+                    cout<<"Fare: "<< rides[i].fare<<endl;
+                    cout<<"Status: "<< rides[i].status<<endl;
+                }
+            }
+        }
+        else{
+            for(int i = 0; i<rideCount; i++){
+                if((name == rides[i].driverName)&& rides[i].status==status){
+                    cout<<"Driver Name: "<< rides[i].driverName<<endl;
+                    cout<<"Rider Name: "<< rides[i].riderName<<endl;
+                    cout<<"Ride ID: "<< rides[i].rideID<<endl;
+                    cout<<"Pickup Location: "<< rides[i].pickupLocation<<endl;
+                    cout<<"Dropoff Location: "<< rides[i].dropoffLocation<<endl;
+                    cout<<"Distance: "<< rides[i].distance<<endl;
+                    cout<<"Fare: "<< rides[i].fare<<endl;
+                    cout<<"Status: "<< rides[i].status<<endl;
+                }
             }
         }
     }
     else{
-        for(int i = 0; i<rideCount; i++){
-            if((name == rides[i].driverName || name == rides[i].riderName)&& rides[i].status==status){
-                cout<<"Driver Name: "<< rides[i].driverName<<endl;
-                cout<<"Rider Name: "<< rides[i].riderName<<endl;
-                cout<<"Ride ID: "<< rides[i].rideID<<endl;
-                cout<<"Pickup Location: "<< rides[i].pickupLocation<<endl;
-                cout<<"Dropoff Location: "<< rides[i].dropoffLocation<<endl;
-                cout<<"Distance: "<< rides[i].distance<<endl;
-                cout<<"Fare: "<< rides[i].fare<<endl;
-                cout<<"Status: "<< rides[i].status<<endl;
+        if(status == ""){
+            for(int i = 0; i<rideCount; i++){
+                if(name == rides[i].riderName){
+                    cout<<"Driver Name: "<< rides[i].driverName<<endl;
+                    cout<<"Rider Name: "<< rides[i].riderName<<endl;
+                    cout<<"Ride ID: "<< rides[i].rideID<<endl;
+                    cout<<"Pickup Location: "<< rides[i].pickupLocation<<endl;
+                    cout<<"Dropoff Location: "<< rides[i].dropoffLocation<<endl;
+                    cout<<"Distance: "<< rides[i].distance<<endl;
+                    cout<<"Fare: "<< rides[i].fare<<endl;
+                    cout<<"Status: "<< rides[i].status<<endl;
+                }
+            }
+        }
+        else{
+            for(int i = 0; i<rideCount; i++){
+                if((name == rides[i].riderName)&& rides[i].status==status){
+                    cout<<"Driver Name: "<< rides[i].driverName<<endl;
+                    cout<<"Rider Name: "<< rides[i].riderName<<endl;
+                    cout<<"Ride ID: "<< rides[i].rideID<<endl;
+                    cout<<"Pickup Location: "<< rides[i].pickupLocation<<endl;
+                    cout<<"Dropoff Location: "<< rides[i].dropoffLocation<<endl;
+                    cout<<"Distance: "<< rides[i].distance<<endl;
+                    cout<<"Fare: "<< rides[i].fare<<endl;
+                    cout<<"Status: "<< rides[i].status<<endl;
+                }
             }
         }
     }
+    
 }
 
 // Displays ongoing rides for the user, prompts for Ride ID, and returns it
-int ChangeStatus(string name, Ride rides[], int count) {
+int ChangeStatus(string name, Ride rides[], string mode) {
     // TODO: Show ongoing rides for the name. Hint: Call ViewRides and use the third parameter 
     //       Ask user to enter the Ride ID to update
     //       Return the Ride ID so status can be updated in main
-    ViewRides(name,rides,"Ongoing");
+    ViewRides(name,rides,"Ongoing",mode);
+    int userRide;
+    while(true){
+        cout << "Enter ride ID to be updated: ";
+        cin.ignore();
+        cin >> userRide;
+        if(inStruct(rides,"rideID",userRide)){
+            return userRide;
+        }
+        else{
+            cout << "Invalid rideID; please try again"<<endl;
+            cin.clear();
+        }
+    }
     
-
     return -1; // Placeholder
 }
 
 // Sums up the fare of all rides assigned to a driver
 double CalculateTotal(string driverName, Ride rides[]) {
     // TODO: Add up fares of rides where driverName matches and status is "Completed"
-    return 0.0;
+    double total =0 ;
+    for(int i=0; i<rideCount; i++){
+        if(rides[i].driverName==driverName || rides[i].status=="Completed"){
+            total = rides[i].fare + total;
+        }
+    }
+    return total;
 }
 
 // ================= Main Function =================
@@ -251,6 +302,8 @@ int main() {
     // - Ensure ride count does not exceed MAX_RIDES
     // - Validate menu inputs
     Ride test = BookRide("saqib");
-
+    cout << rideDetails[2].rideID<<endl;
+    //int x = ChangeStatus("Ali",rideDetails,"Rider");
+    
     return 0;
 }
