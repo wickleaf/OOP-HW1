@@ -24,18 +24,23 @@ struct Ride {
 };
 
 // Global Variables
-Ride rideDetails[MAX_RIDES]{{"Ali", 100001, "Farhan", "A", "B", 200, "Ongoing", 5.0},{"Sara", 100002, "Mujtaba", "X", "Y", 150, "Completed", 3.0}};
-int rideCount = 2; // Keeps track of total rides
-string Drivers[MAX_DRIVERS]={"Farhan","Mujtaba"};
-int driverCount = 2; // Keeps track of total drivers
-int rideID = 100002; //To use later on for assigning and incrementing
+Ride rideDetails[MAX_RIDES];
+int rideCount = 0; // Keeps track of total rides
+string Drivers[MAX_DRIVERS];
+int driverCount = 0; // Keeps track of total drivers
+int rideID = 100001; //To use later on for assigning and incrementing
 // ================= Function Definitions =================
 
 int IsAvailable(string driverName, Ride rides[]){
     // TODO: Searches through the array 
     //       Checks if the given driverName has an Ongoing ride
     //       If the given driverName has an Ongoing ride returns 1, otherwise returns 0
-    
+    bool registered = false;
+    for(int i=0; i<driverCount;i++){
+        if(Drivers[i]==driverName){
+            registered = true;
+        }
+    }
     bool ongoing = false;
     for (int i=0; i<driverCount; i++){
         if ((rides[i].driverName == driverName)&&(rideDetails[i].status == "Ongoing")){
@@ -301,9 +306,50 @@ int main() {
     // - Use the provided functions to implement menu options
     // - Ensure ride count does not exceed MAX_RIDES
     // - Validate menu inputs
-    Ride test = BookRide("saqib");
-    cout << rideDetails[2].rideID<<endl;
-    //int x = ChangeStatus("Ali",rideDetails,"Rider");
+    bool returnMenu = true;
+    do{
+    cout<< "Welcome to the Ride Booking Simulation program! Are you a Rider (1) or a Driver (2)? Enter your role: ";
+    int x;
+    while(true){
+        cin >> x;
+        if(x<1 && x>2){
+            cout << "Please input a valid role!"<<endl;
+        }
+        else{
+            break;
+        }
+    }
+
+    if(x==1){
+        string userRider;
+        cout << "Please enter your name: ";
+        cin>> userRider;
+        int userInput;
+        BookRide(userRider);
+        
+    }
+    else if(x==2){
+        string userDriver;
+        cout << "Please enter your name: ";
+        cin >> userDriver;
+        bool exists = false;
+        for(int i =0; i<driverCount; i++){
+            if (Drivers[i]== userDriver){
+                exists = true;
+            }
+        }
+        if (exists == false){
+            Drivers[driverCount+1] = userDriver;
+            //driverCount++;
+        }
+        int userInput;
+        cin >> userInput;
+        if(userInput == 1){
+            returnMenu==true;
+        }
+    }
+}while(returnMenu==true);
+    
     
     return 0;
 }
