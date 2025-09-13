@@ -35,13 +35,13 @@ int IsAvailable(string driverName, Ride rides[]){
     // TODO: Searches through the array 
     //       Checks if the given driverName has an Ongoing ride
     //       If the given driverName has an Ongoing ride returns 1, otherwise returns 0
+    // I used a boolean flag to keep track of whether the driver has an ongoing ride to make sure that every ride of said driver is considered.
     bool ongoing = false;
     for (int i=0; i<rideCount; i++){
         if ((rides[i].driverName == driverName)&&(rideDetails[i].status == "Ongoing")){
             ongoing = true;
         } 
         else if(rides[i].driverName== driverName){
-            //cout<<"works";
             ongoing = false;
         } //Finds driver and checks if they have an ongoing ride
     }
@@ -77,6 +77,8 @@ int GetFare(int distance){
  }
     
 
+//Function I made midway through the HW which tbh wasn't even that useful. It tries to find the required value in the struct.
+//Had to use variant because the struct has multiple data types.
 bool inStruct(Ride rides[],string toGet,const variant<int,string,double>&value){
     for(int i = 0; i<rideCount; i++){
         if(toGet=="rideID"){
@@ -126,7 +128,7 @@ Ride BookRide(string name) {
     string pickup;
     string dropOff;
     double distance;
-
+    //Max rides validation
     if (rideCount==MAX_RIDES){
         cout << "Sorry you cannot book a ride :(";
         return newRide;
@@ -187,15 +189,17 @@ Ride BookRide(string name) {
 
     rideDetails[rideCount]=newRide;
     rideCount++;
-    avalCount=0;
+    avalCount=0; //Resetting aval count for future use
     return newRide;
 }
 
 // Displays rides that match the given name (rider or driver)
+//Passed new parameter mode to differentiate between rider and driver
 void ViewRides(string name, Ride rides[], string status, string mode) {
     // TODO: Loop through the array and print rides where name matches riderName or driverName
     //       Displays all rides for that name regardless of status if status is ""
     //       Displays rides for that name and status if a status value was passed
+
     if(mode=="Driver"){
         if(status == ""){
             for(int i = 0; i<rideCount; i++){
@@ -280,7 +284,7 @@ int ChangeStatus(string name, Ride rides[], string mode) {
         }
     }
     
-    return -1; // Placeholder
+    return -1; // Bleh
 }
 
 // Sums up the fare of all rides assigned to a driver
