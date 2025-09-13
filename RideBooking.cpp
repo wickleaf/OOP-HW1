@@ -35,14 +35,8 @@ int IsAvailable(string driverName, Ride rides[]){
     // TODO: Searches through the array 
     //       Checks if the given driverName has an Ongoing ride
     //       If the given driverName has an Ongoing ride returns 1, otherwise returns 0
-    bool registered = false;
-    for(int i=0; i<driverCount;i++){
-        if(Drivers[i]==driverName){
-            registered = true;
-        }
-    }
     bool ongoing = false;
-    for (int i=0; i<driverCount; i++){
+    for (int i=0; i<rideCount; i++){
         if ((rides[i].driverName == driverName)&&(rideDetails[i].status == "Ongoing")){
             ongoing = true;
         } 
@@ -144,34 +138,40 @@ Ride BookRide(string name) {
     }
     while(distance<0.0);
     bool riderAval = false;
-    int avalDrivers[driverCount]; //Will use to validate user input through indexing
+    int avalDriversIndex[driverCount]; //Will use to validate user input through indexing
+    string avalDrivers[driverCount]; //Will use to store available drivers
     int avalCount=0;
-    for(int i=0; i<driverCount; i++, ++ptr){
+    for(int i=0; i<driverCount; i++, ptr++){
         if (IsAvailable(*ptr, rideDetails)==0){
             riderAval=true;
-            avalDrivers[avalCount]=avalCount+1;
-            cout <<i<<") "<<*ptr<<endl;
+            avalDriversIndex[avalCount]=avalCount+1;
+            avalDrivers[avalCount]=*ptr;
+            cout <<i+1<<") "<<*ptr<<endl;
             avalCount++;
         }
     }
     if(rideID==START_RIDE_ID){
             newRide.rideID=rideID;
+            rideID++;
         }
     else{
-        newRide.rideID = ++rideID;
-        }
+        newRide.rideID=rideID;
+        rideID++;}
     if(riderAval==false){
         cout << "No driver is available at the moment :("<<endl;
         newRide.status="Cancelled";
+        newRide.riderName=name;
         newRide.driverName="";
+        newRide.distance=distance; newRide.pickupLocation=pickup; newRide.dropoffLocation=dropOff; newRide.fare=0;
         rideDetails[rideCount]=newRide;
         rideCount++;
+        avalCount=0;
         return newRide;
     }
     int driver;
     while(true){
         cout<<"Pick a driver: "; cin>> driver;
-        if (driver >= avalDrivers[0] && driver <= avalDrivers[avalCount-1]) break;
+        if (driver >= avalDriversIndex[0] && driver <= avalDriversIndex[avalCount-1]) break;
         else{
             cout<<"Index out of range"<<endl;
         }
@@ -181,13 +181,13 @@ Ride BookRide(string name) {
     double fare = GetFare(distance);
     cout << "Your fare will be: "<<fare<< endl;
 
-    newRide.status="Ongoing"; newRide.driverName= driver; newRide.distance=distance; 
+    newRide.status="Ongoing"; newRide.driverName=avalDrivers[driver-1]; newRide.distance=distance; 
     newRide.dropoffLocation=dropOff; newRide.pickupLocation=pickup; newRide.fare=fare; 
     newRide.riderName=name;
 
     rideDetails[rideCount]=newRide;
     rideCount++;
-
+    avalCount=0;
     return newRide;
 }
 
@@ -241,7 +241,8 @@ void ViewRides(string name, Ride rides[], string status, string mode) {
                 }
             }
         }
-        else{
+        else if(mode=="Rider"){
+            cout<<"here";
             for(int i = 0; i<rideCount; i++){
                 if((name == rides[i].riderName)&& rides[i].status==status){
                     cout<<"Driver Name: "<< rides[i].driverName<<endl;
@@ -312,6 +313,7 @@ int main() {
     int x;
     while(true){
         cin >> x;
+        cin.ignore();
         if(x<1 && x>2){
             cout << "Please input a valid role!"<<endl;
         }
@@ -323,15 +325,57 @@ int main() {
     if(x==1){
         string userRider;
         cout << "Please enter your name: ";
-        cin>> userRider;
+        
+        getline(cin, userRider);
         int userInput;
-        BookRide(userRider);
+        do {
+            cout << "\nWelcome " << userRider << ". Please Select an Option\n";
+            cout << "1. Book a Ride\n";
+            cout << "2. View My Rides\n";
+            cout << "3. Cancel a Ride\n";
+            cout << "4. Return to Main Menu\n";
+            cout << "Enter your choice: ";
+            cin >> userInput;
+            cin.ignore();
+            switch(userInput) {
+                case 1:
+                    BookRide(userRider);
+                    break;
+                case 2:
+                    ViewRides(userRider, rideDetails, "", "Rider");
+                    break;
+                case 3: {
+                    int rideIDToCancel = ChangeStatus(userRider, rideDetails, "Rider");
+                    // Find and update status to "Cancelled"
+                    for(int i = 0; i < rideCount; i++) {
+                        if(rideDetails[i].rideID == rideIDToCancel) {
+                            rideDetails[i].status = "Cancelled";
+                            cout << "Ride " << rideIDToCancel << " has been cancelled.\n";
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                    cout << "Returning to Main Menu...\n";
+                    returnMenu=true;
+                    break;
+                default:
+                    cout << "Invalid option. Please try again.\n";
+            }
+        } while(userInput != 4);
+        
         
     }
     else if(x==2){
+        if(driverCount == MAX_DRIVERS){
+            cout<< "Sorry the maximum limit of drivers has been reached.";
+            break;
+        }
         string userDriver;
         cout << "Please enter your name: ";
-        cin >> userDriver;
+        //cin.ignore();
+        getline(cin,userDriver);
         bool exists = false;
         for(int i =0; i<driverCount; i++){
             if (Drivers[i]== userDriver){
@@ -339,14 +383,54 @@ int main() {
             }
         }
         if (exists == false){
-            Drivers[driverCount+1] = userDriver;
-            //driverCount++;
+            Drivers[driverCount] = userDriver;
+            driverCount++;
         }
         int userInput;
-        cin >> userInput;
-        if(userInput == 1){
-            returnMenu==true;
-        }
+        do {
+            cout << "\nWelcome " << userDriver << ". Please Select an Option\n";
+            cout << "1. View Assigned Rides\n";
+            cout << "2. Mark ride as completed\n";
+            cout << "3. View all Rides\n";
+            cout << "4. View Total Earnings\n";
+            cout << "5. Return to Main Menu\n";
+            cout << "Enter your choice: ";
+            cin >> userInput;
+            cin.ignore();
+
+            switch(userInput) {
+                case 1:
+                    ViewRides(userDriver, rideDetails, "Ongoing", "Driver");
+                    break;
+                case 2: {
+                    int rideIDToComplete = ChangeStatus(userDriver, rideDetails, "Driver");
+                    // Find and update status to "Completed"
+                    for(int i = 0; i < rideCount; i++) {
+                        if(rideDetails[i].rideID == rideIDToComplete) {
+                            rideDetails[i].status = "Completed";
+                            cout << "Ride " << rideIDToComplete << " has been marked as completed.\n";
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case 3: {
+                    ViewRides(userDriver, rideDetails, "", "Driver");
+                    break;
+                }
+                case 4: {
+                    double totalEarnings = CalculateTotal(userDriver, rideDetails);
+                    cout << "Your total earnings from completed rides: " << totalEarnings << "\n";
+                    break;
+                }
+                case 5:
+                    cout << "Returning to Main Menu...\n";
+                    returnMenu=true;
+                    break;
+                default:
+                    cout << "Invalid option. Please try again.\n";
+            }
+        } while(userInput != 4);
     }
 }while(returnMenu==true);
     
